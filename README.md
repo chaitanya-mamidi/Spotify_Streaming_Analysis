@@ -5,7 +5,7 @@
 
 Music is a part of our daily lives, and streaming platforms like **Spotify** generate tons of data on **how, when, and where** people listen.  
 
-This project **dives into real user listening behavior** using **SQL (PostgreSQL)** to uncover:  
+This project **dives into user listening behavior** using **SQL (PostgreSQL)** to uncover:  
 ✔️ How shuffle mode impacts track variety and engagement  
 ✔️ The most active platforms and their listening trends  
 ✔️ What time of day people listen the most  
