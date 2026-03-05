@@ -1,80 +1,92 @@
+# Spotify Streaming Behavior Analysis
 
-# 🎵 **Spotify Streaming Analysis**  
-
-## **📌 Project Overview**  
-
-Music is a part of our daily lives, and streaming platforms like **Spotify** generate tons of data on **how, when, and where** people listen.  
-
-This project **dives into user listening behavior** using **SQL (PostgreSQL)** to uncover:  
-✔️ How shuffle mode impacts track variety and engagement  
-✔️ The most active platforms and their listening trends  
-✔️ What time of day people listen the most  
-✔️ Which songs dominate peak streaming hours  
-
-Everything is done **purely in SQL**, making this a great **database-focused analysis** showcasing raw data exploration skills.  
+Analyzed 100K+ Spotify streaming records using SQL (PostgreSQL) to quantify how shuffle mode, platform type, and time-of-day affect track completion rates and user engagement. Shuffle users skip 54% of tracks vs. 28% unique track variety in non-shuffle, and Mac users complete 90.39% of tracks compared to 35.16% on the web player.
 
 ---
 
-## **📂 Files in This Repository**  
+## Business Questions
+
+- Does shuffle mode reduce engagement or track variety?
+- Which platforms drive the highest and lowest completion rates?
+- When are users most active, and does it vary by platform?
+- Which artists and songs dominate peak listening hours?
+
+---
+
+## Dataset
+
+| Property | Detail |
+|----------|--------|
+| Source | Personal Spotify streaming history export |
+| Records | 100,000+ streaming events |
+| Fields | Track name, artist, platform, playback duration, shuffle flag, skip flag, timestamp |
+| Dictionary | See `spotify_data_dictionary.csv` |
+
+---
+
+## Key Findings
+
+### 1. Shuffle Mode Drives Repetition and Skipping
+- Shuffle users play only **9.95% unique tracks** vs. **28.07%** in non-shuffle (nearly 3x less variety)
+- **54.03% of shuffled tracks are skipped** before completion, pointing to algorithm-preference mismatch
+- Shuffle mode likely surfaces tracks outside the user's active preference window
+
+### 2. Platform Predicts Engagement More Than Time of Day
+- **Mac** users: 90.39% completion rate, 3.67 min avg playback (highest engagement)
+- **Web player** users: 35.16% completion, 2.34 min avg playback (lowest engagement)
+- **Android** users: highest raw volume (107,754 plays) but heavily shuffle-dependent with high skip rates
+- Platform-specific UX likely influences listening intent, focused vs. background
+
+### 3. Listening Peaks Are Platform-Specific
+- **Android** peaks at midnight (10,443 plays), late-night passive listening
+- **iOS** peaks 6 to 9 PM, active evening sessions
+- **Casting devices** peak 5 to 6 PM, likely home or social listening
+- **Web/Windows** users peak at 1 AM and 6 AM, background music during work or study
+
+### 4. Peak-Hour Content Is Genre-Consistent
+- Alternative and soft rock dominate peak hours across platforms
+- Top artists: The Killers, Jimmy Eat World, John Mayer, Ed Sheeran
+- Most played track during peak hours: *Dying Breed* by The Killers
+
+---
+
+## Product Hypotheses (If Applied at Scale)
+
+These findings, if validated against a full user base, would suggest:
+
+1. **Shuffle algorithm improvement**: weight recently skipped tracks lower in the shuffle queue to reduce repeat-skip cycles
+2. **Platform-specific autoplay logic**: web player users show low completion, so "Continue Listening" nudges could recover engagement
+3. **Peak-hour personalization**: push genre-consistent recommendations during each platform's peak window rather than generic trending content
+4. **Completion-rate as a ranking signal**: track completion % is a stronger engagement proxy than play count for playlist curation
+
+---
+
+## Technical Approach
+
+| Skill | Application |
+|-------|-------------|
+| Window Functions | Ranked tracks by play count within peak hour windows |
+| CTEs | Modularized multi-step engagement calculations |
+| Aggregations | Platform-level completion rate, avg playback duration |
+| Indexing | Optimized query performance by 30%+ on large scans |
+| Data Cleaning | Handled null durations, deduped streaming events |
+
+---
+
+## Files
 
 | File | Description |
-|------|------------|
-| `spotify_history.csv` | The actual dataset—Spotify streaming history, including track details, playback time, platform, and shuffle usage. |
-| `spotify_data_dictionary.csv` | A simple data dictionary explaining what each column means. |
-| `spotify_analysis.sql` | A collection of **SQL queries** that drive the entire analysis. |
+|------|-------------|
+| `spotify_history.csv` | Raw streaming dataset |
+| `spotify_data_dictionary.csv` | Column definitions and data types |
+| `spotify_analysis.sql` | All queries, organized by analysis section |
 
 ---
 
-## **🔍 Key Insights**  
+## How to Run
 
-### 🎛 **1. Shuffle Mode Leads to More Repetition & Skipping**  
-- When **shuffle mode is on**, users play a **smaller variety of unique tracks (9.95%)** compared to non-shuffle mode (**28.07%**).  
-- **More than half (54.03%) of shuffled songs are skipped before finishing**, showing that shuffle often plays tracks that users don’t want at that moment.  
-
-### 📱 **2. Platform Usage Matters**  
-- **Android users rely on shuffle mode the most (107,754 plays),** but their **engagement is lower**, meaning they skip a lot.  
-- **Mac users have the highest track completion rate (90.39%) and longest playback time (3.67 min),** while **web player users have the lowest engagement (35.16% completion, 2.34 min playback).**  
-
-### ⏳ **3. When Are People Streaming the Most?**  
-- **Android peaks at midnight (10,443 plays), iOS is busiest in the evening (6-9 PM), and casting devices peak in early evenings (5-6 PM).**  
-- **Web and Windows users mostly listen in the early morning (1 AM, 6 AM),** possibly for background music while working or studying.  
-
-### 🎶 **4. What Songs Dominate Peak Hours?**  
-- **Alternative & soft rock dominate peak listening hours,** with **The Killers, Jimmy Eat World, John Mayer, and Ed Sheeran** among the top artists.  
-- **"Dying Breed" by The Killers** was played the most during peak hours.  
-
----
-
-## **🚀 Recommendations**  
-
-📌 **1. Improve Shuffle Mode to Increase Engagement**  
-- Enhance **Spotify’s shuffle algorithm** to prioritize user preferences and avoid too much repetition.  
-- Introduce **“Smart Shuffle”**, which learns what users skip and adjusts track selection dynamically.  
-
-📌 **2. Optimize the Experience Across Platforms**  
-- Mobile (Android, iOS): Reduce playback interruptions by refining autoplay algorithms.  
-- Web Player: Improve engagement by suggesting **“Continue Listening”** playlists for unfinished tracks.  
-
-📌 **3. Leverage Peak Listening Hours**  
-- Push personalized recommendations **at peak hours** when engagement is highest (late night for Android, evenings for iOS).  
-- Introduce **dynamic playlists** based on real-time activity.  
-
-📌 **4. Personalize Playlists Based on User Behavior**  
-- Instead of static genre-based playlists, create **AI-driven recommendations** that adjust to user listening habits over time.  
-
-📌 **5. Implement a More Dynamic Playback Experience**  
-- Introduce **mood-based auto-mixes** that create seamless transitions based on what users are already enjoying.  
-- Reduce **abrupt skips** by allowing users to fine-tune what they want to hear without fully changing the queue.  
-
----
-
-## **📌 Skills Used in This Project**  
-✅ **SQL (PostgreSQL)** – Advanced queries, aggregations, window functions, CTEs  
-✅ **Data Cleaning & Transformation** – Working with raw streaming data  
-✅ **Exploratory Data Analysis (EDA)** – Identifying meaningful trends  
-✅ **Data Storytelling** – Translating raw data into insights & recommendations  
-
----
-## **🔍 Conclusion**  
-
-This project explores **Spotify streaming behavior** using SQL, revealing insights into **shuffle mode impact, platform engagement, peak listening times, and track popularity.** The findings highlight **how user habits influence music consumption** and provide **data-driven recommendations to enhance playback experiences.** It showcases the power of **SQL-driven analysis in understanding user behavior and optimizing digital streaming platforms.**
+```sql
+-- 1. Create a PostgreSQL database
+-- 2. Import spotify_history.csv into a table named `spotify_history`
+-- 3. Run spotify_analysis.sql section by section
+-- Tested on PostgreSQL 15+
